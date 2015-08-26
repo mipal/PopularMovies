@@ -1,6 +1,19 @@
 <resources>
     <string name="app_name">PopularMovies</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    // Settings
+    <string name="pref_sort_label">Sorting</string>
+    <string name="pref_sort_key" translatable="false">sort_key</string>
+
+    <string name="pref_sort_popular" translatable="false">popularity.desc</string>
+    <string name="pref_sort_rating" translatable="false">vote_average.desc</string>
+
+    <string name="pref_sort_popular_label">by popularity</string>
+    <string name="pref_sort_rating_label">by rating</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="hello_world">Hello world!</string>
+
+
+
 </resources>
