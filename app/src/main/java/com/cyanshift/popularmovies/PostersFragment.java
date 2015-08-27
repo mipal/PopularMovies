@@ -203,7 +203,7 @@ public class PostersFragment extends Fragment {
     public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-        private final String API_KEY = "4881ef723ce5e7be9be793d66b3e2afe"; // PUT YOUR API KEY HERE!
+        private final String API_KEY = ""; // PUT YOUR API KEY HERE!
         private final String BASE_PATH = "http://api.themoviedb.org/3/discover/movie?";
         private final String SORT_PARAM_KEY = "sort_by";
         private final String KEY_PARAM_KEY = "api_key";
