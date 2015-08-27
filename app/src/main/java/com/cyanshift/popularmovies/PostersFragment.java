@@ -47,6 +47,7 @@ import java.util.ArrayList;
 public class PostersFragment extends Fragment {
 
     ArrayList<Movie> savedMovies;
+    String latestSortParam;
     GridView gridView;
 
 
@@ -90,8 +91,9 @@ public class PostersFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         // Reuse the old list if sortParams have not changed
-        if (savedInstanceState != null && savedInstanceState.getString("lastSortParam").equals(getCurrentSortParam())) {
+        if (savedInstanceState != null) {
             savedMovies = savedInstanceState.getParcelableArrayList("myKey");
+            latestSortParam = savedInstanceState.getString("latestParams");
         }
         setHasOptionsMenu(true);
     }
@@ -99,9 +101,7 @@ public class PostersFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("myKey", savedMovies);
-
-        outState.putString("lastSortParam", getCurrentSortParam());
-
+        outState.putString("latestParams", getCurrentSortParam());
         super.onSaveInstanceState(outState);
     }
 
@@ -157,8 +157,15 @@ public class PostersFragment extends Fragment {
                 getString(R.string.pref_sort_popular));
     }
 
+    private boolean paramsChanged() {
+        if (latestSortParam == null)
+            return true;
+
+        return !latestSortParam.equals(getCurrentSortParam());
+    }
+
     private void updatePosters() {
-        if (savedMovies != null) {
+        if (savedMovies != null && !paramsChanged()) {
             gridView.setAdapter(new PosterAdapter(getActivity(), savedMovies));
         }
         else {
@@ -282,6 +289,7 @@ public class PostersFragment extends Fragment {
         protected void onPostExecute(ArrayList<Movie> movies) {
             if (movies != null)
                 savedMovies = movies;
+                latestSortParam = getCurrentSortParam();
                 gridView.setAdapter(new PosterAdapter(getActivity(), movies));
         }
 

@@ -25,7 +25,9 @@ public class PosterAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return movies.size();
+        if (movies != null)
+            return movies.size();
+        return 0;
     }
 
     public Object getItem(int position) {
