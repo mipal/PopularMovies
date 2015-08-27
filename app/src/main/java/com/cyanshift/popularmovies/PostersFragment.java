@@ -1,9 +1,14 @@
 package com.cyanshift.popularmovies;
 
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -84,7 +89,8 @@ public class PostersFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        if (savedInstanceState != null) {
+        // Reuse the old list if sortParams have not changed
+        if (savedInstanceState != null && savedInstanceState.getString("lastSortParam").equals(getCurrentSortParam())) {
             savedMovies = savedInstanceState.getParcelableArrayList("myKey");
         }
         setHasOptionsMenu(true);
@@ -93,6 +99,9 @@ public class PostersFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("myKey", savedMovies);
+
+        outState.putString("lastSortParam", getCurrentSortParam());
+
         super.onSaveInstanceState(outState);
     }
 
@@ -135,11 +144,17 @@ public class PostersFragment extends Fragment {
 
         if (id == R.id.action_settings) {
             startActivity(new Intent(getActivity(), SettingsActivity.class));
-            savedMovies = null;
+            //savedMovies = null;
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getCurrentSortParam() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return prefs.getString(getString(R.string.pref_sort_key),
+                getString(R.string.pref_sort_popular));
     }
 
     private void updatePosters() {
@@ -147,19 +162,41 @@ public class PostersFragment extends Fragment {
             gridView.setAdapter(new PosterAdapter(getActivity(), savedMovies));
         }
         else {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String sortParam = prefs.getString(getString(R.string.pref_sort_key),
-                    getString(R.string.pref_sort_popular));
-
-            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
-            fetchMoviesTask.execute(sortParam);
+            if (isNetworkAvailable()) {
+                String sortParam = getCurrentSortParam();
+                FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
+                fetchMoviesTask.execute(sortParam);
+            }
+            else {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.network_error)
+                        .setMessage(R.string.network_error_dialogue)
+                        .setPositiveButton(R.string.retry, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                updatePosters();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-        private final String API_KEY = ""; // PUT YOUR API KEY HERE!
+        private final String API_KEY = "4881ef723ce5e7be9be793d66b3e2afe"; // PUT YOUR API KEY HERE!
         private final String BASE_PATH = "http://api.themoviedb.org/3/discover/movie?";
         private final String SORT_PARAM_KEY = "sort_by";
         private final String KEY_PARAM_KEY = "api_key";
