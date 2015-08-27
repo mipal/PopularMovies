@@ -1,5 +1,8 @@
 package com.cyanshift.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -7,7 +10,8 @@ import java.util.Date;
  * Created by michael on Aug/26/2015.
  */
 
-public class Movie {
+public class Movie implements Parcelable {
+
     public final static String BASE_POSTER_URL = "http://image.tmdb.org/t/p/w342//";
 
     private boolean adult;
@@ -24,6 +28,11 @@ public class Movie {
     private boolean video;
     private Double vote_average;
     private Integer vote_count;
+
+
+    public Movie() {
+
+    }
 
     public String getBackdrop_path() {
         return backdrop_path;
@@ -136,4 +145,55 @@ public class Movie {
     public void setVote_count(Integer vote_count) {
         this.vote_count = vote_count;
     }
+
+    private Movie (Parcel in) {
+        this.adult = in.readByte() != 0;
+        this.backdrop_path = in.readString();
+        this.genre_ids = (ArrayList<Integer>) in.readSerializable();
+        this.id = in.readInt();
+        this.original_language = in.readString();
+        this.original_title = in.readString();
+        this.overview = in.readString();
+        this.release_date = new Date(in.readLong());
+        this.poster_path = in.readString();
+        this.popularity = in.readDouble();
+        this.title = in.readString();
+        this.video = in.readByte() != 0;
+        this.vote_average = in.readDouble();
+        this.vote_count = in.readInt();
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (adult ? 1: 0));
+        dest.writeString(backdrop_path);
+        dest.writeSerializable(genre_ids);
+        dest.writeInt(id);
+        dest.writeString(original_language);
+        dest.writeString(original_title);
+        dest.writeString(overview);
+        if (release_date != null)
+            dest.writeLong(release_date.getTime());
+        dest.writeString(poster_path);
+        dest.writeDouble(popularity);
+        dest.writeString(title);
+        dest.writeByte((byte) (video ? 1: 0));
+        dest.writeDouble(vote_average);
+        dest.writeInt(vote_count);
+
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

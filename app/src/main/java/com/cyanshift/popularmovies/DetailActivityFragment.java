@@ -36,10 +36,15 @@ public class DetailActivityFragment extends Fragment {
         // Set release date (year)
         textView = (TextView) rootView.findViewById(R.id.detail_releasedate_textview);
         Date releaseDate = movie.getRelease_date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(releaseDate);
-        Integer year = cal.get(Calendar.YEAR);
-        textView.setText(year.toString());
+        if (releaseDate != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(releaseDate);
+            Integer year = cal.get(Calendar.YEAR);
+            textView.setText(year.toString());
+        }
+        else {
+            textView.setText("???");
+        }
 
         // Set rating
         textView = (TextView) rootView.findViewById(R.id.detail_rating_textview);
@@ -51,7 +56,8 @@ public class DetailActivityFragment extends Fragment {
 
         // Set poster
         ImageView imageView = (ImageView) rootView.findViewById(R.id.detail_poster_imageview);
-        Picasso.with(getActivity()).load(Movie.BASE_POSTER_URL + movie.getPoster_path()).into(imageView);
+        //Picasso.with(getActivity()).load(Movie.BASE_POSTER_URL + movie.getPoster_path()).into(imageView);
+        Picasso.with(getActivity()).load(Movie.BASE_POSTER_URL + movie.getPoster_path()).placeholder(R.drawable.image_placeholder).error(R.drawable.image_error).into(imageView);
 
         return rootView;
     }

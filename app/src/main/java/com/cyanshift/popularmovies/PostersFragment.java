@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -38,8 +41,7 @@ import java.util.ArrayList;
  */
 public class PostersFragment extends Fragment {
 
-
-    PosterAdapter posterAdapter;
+    ArrayList<Movie> savedMovies;
     GridView gridView;
 
 
@@ -82,6 +84,16 @@ public class PostersFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        if (savedInstanceState != null) {
+            savedMovies = savedInstanceState.getParcelableArrayList("myKey");
+        }
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("myKey", savedMovies);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -112,13 +124,36 @@ public class PostersFragment extends Fragment {
         updatePosters();
     }
 
-    private void updatePosters() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortParam = prefs.getString(getString(R.string.pref_sort_key),
-                getString(R.string.pref_sort_popular));
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.menu_main, menu);
+    }
 
-        FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
-        fetchMoviesTask.execute(sortParam);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(getActivity(), SettingsActivity.class));
+            savedMovies = null;
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void updatePosters() {
+        if (savedMovies != null) {
+            gridView.setAdapter(new PosterAdapter(getActivity(), savedMovies));
+        }
+        else {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String sortParam = prefs.getString(getString(R.string.pref_sort_key),
+                    getString(R.string.pref_sort_popular));
+
+            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
+            fetchMoviesTask.execute(sortParam);
+        }
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
@@ -209,6 +244,7 @@ public class PostersFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
             if (movies != null)
+                savedMovies = movies;
                 gridView.setAdapter(new PosterAdapter(getActivity(), movies));
         }
 
