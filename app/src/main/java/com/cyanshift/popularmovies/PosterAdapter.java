@@ -1,6 +1,7 @@
 package com.cyanshift.popularmovies;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +64,12 @@ public class PosterAdapter extends BaseAdapter {
 
 
         Movie movie = movies.get(position);
-        Picasso.with(mContext).load(Movie.BASE_POSTER_URL + movie.getPoster_path()).into(viewHolder.imageView);
+        String urlString = Movie.BASE_POSTER_URL + movie.getPoster_path();
+        Uri uri = Uri.parse(urlString);
+        if (uri != null) {
+            Picasso.with(mContext).load(urlString).into(viewHolder.imageView);
+        }
+
         viewHolder.textView.setText(movie.getTitle());
 
         return view;
