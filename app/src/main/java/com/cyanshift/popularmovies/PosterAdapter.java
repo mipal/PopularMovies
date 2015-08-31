@@ -42,23 +42,36 @@ public class PosterAdapter extends BaseAdapter {
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        PosterViewHolder viewHolder;
+
         View view;
 
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             view = LayoutInflater.from(mContext).inflate(R.layout.grid_item_poster, null);
+
+            viewHolder = new PosterViewHolder();
+            viewHolder.textView = (TextView)view.findViewById(R.id.grid_item_poster_text_view);
+            viewHolder.imageView = (ImageView)view.findViewById(R.id.grid_item_poster_imageview);
+
+            view.setTag(viewHolder);
+
         } else {
             view = convertView;
+            viewHolder = (PosterViewHolder) view.getTag();
         }
 
-        TextView text = (TextView)view.findViewById(R.id.grid_item_poster_text_view);
-        ImageView imageView = (ImageView)view.findViewById(R.id.grid_item_poster_imageview);
 
         Movie movie = movies.get(position);
-        Picasso.with(mContext).load(Movie.BASE_POSTER_URL + movie.getPoster_path()).into(imageView);
-        text.setText(movie.getTitle());
+        Picasso.with(mContext).load(Movie.BASE_POSTER_URL + movie.getPoster_path()).into(viewHolder.imageView);
+        viewHolder.textView.setText(movie.getTitle());
 
         return view;
 
+    }
+
+    static class PosterViewHolder {
+        TextView textView;
+        ImageView imageView;
     }
 }

@@ -118,7 +118,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
     @Override
     protected void onPostExecute(ArrayList<Movie> movies) {
-        
+
         delegate.fetchMovieTaskFinished(movies);
     }
 
