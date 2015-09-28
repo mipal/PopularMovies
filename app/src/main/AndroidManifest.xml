@@ -30,6 +30,9 @@
             android:label="@string/title_activity_detail"
             android:parentActivityName="com.cyanshift.popularmovies.MainActivity">
         </activity>
+        <provider
+            android:authorities="com.cyanshift.popularmovies"
+            android:name=".data.MovieProvider" />
     </application>
 
 </manifest>
