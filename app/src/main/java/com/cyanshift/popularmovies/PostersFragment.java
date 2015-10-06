@@ -154,7 +154,10 @@ public class PostersFragment extends Fragment implements FetchMoviesTask.FetchMo
             gridView.setAdapter(new PosterAdapter(getActivity(), savedMovies));
         }
         else {
-            if (isNetworkAvailable()) {
+            if (getCurrentSortParam().equalsIgnoreCase(getString(R.string.pref_sort_favorite))) {
+                //TODO: Load the movies from the database
+            }
+            else if (isNetworkAvailable()) {
                 String sortParam = getCurrentSortParam();
                 FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(this, getString(R.string.pref_sort_popular));
                 fetchMoviesTask.execute(sortParam);

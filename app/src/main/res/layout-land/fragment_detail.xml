@@ -71,6 +71,15 @@
             android:layout_alignLeft="@+id/detail_rating_textview"
             android:layout_alignStart="@+id/detail_rating_textview" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mark as favorite"
+            android:id="@+id/button2"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/detail_title_textview"
+            android:layout_alignEnd="@+id/detail_title_textview"
+            android:onClick="clickedButton"/>
 
 
     </RelativeLayout>

@@ -1,10 +1,17 @@
 package com.cyanshift.popularmovies;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.cyanshift.popularmovies.data.MovieContract;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -40,5 +47,40 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void clickedButton(View view) {
+        Movie movie = (Movie) DataHolder.getInstance().valueForKey("currentMovie");
+
+
+        ContentValues movieValues = new ContentValues();
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_ADULT, movie.isAdult());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdrop_path());
+        // Store genre Id's as a comma separated String
+        String genreIds = "";
+        for (int i = 0; i < movie.getGenre_ids().size(); i++) {
+            genreIds += movie.getGenre_ids().get(i);
+            if (i < movie.getGenre_ids().size() -1)
+                genreIds += ",";
+        }
+        movieValues.put(MovieContract.MovieEntry.COLUMN_GENRE_IDS, genreIds);
+        movieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, movie.getOriginal_language());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginal_title());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getRelease_date().toString());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPoster_path());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_VIDEO, movie.isVideo());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, movie.getVote_count());
+
+
+        Uri insertedUri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, movieValues);
+        long movieId = ContentUris.parseId(insertedUri);
+
+
+        Log.d("BAJS", "Inserting into database" + movieId);
     }
 }
