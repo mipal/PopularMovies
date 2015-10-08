@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -155,7 +156,9 @@ public class PostersFragment extends Fragment implements FetchMoviesTask.FetchMo
         }
         else {
             if (getCurrentSortParam().equalsIgnoreCase(getString(R.string.pref_sort_favorite))) {
-                //TODO: Load the movies from the database
+                FavoriteLoader favoriteLoader =  new FavoriteLoader(getActivity());
+                this.savedMovies = favoriteLoader.loadMovies();
+                gridView.setAdapter(new PosterAdapter(getActivity(), savedMovies));
             }
             else if (isNetworkAvailable()) {
                 String sortParam = getCurrentSortParam();
