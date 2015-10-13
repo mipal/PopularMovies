@@ -24,7 +24,6 @@ public class FavoriteLoader {
 
     public FavoriteLoader(Context c) {
         this.mContext = c;
-        this.loadMovies();
     }
 
     public ArrayList<Movie> loadMovies() {
