@@ -51,7 +51,9 @@ public class DetailActivity extends AppCompatActivity {
 
     public void clickedButton(View view) {
 
-        //TODO: Check if already exist, if so, delete it from the database
+        //TODO: Check if already exist, if so, delete it from the database.
+
+        // yeas
 
         Movie movie = (Movie) DataHolder.getInstance().valueForKey("currentMovie");
 
